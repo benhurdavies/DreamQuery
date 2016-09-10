@@ -10,5 +10,6 @@ namespace DreamQuery.SP
     {
         public string ClassName { get; set; }
         public string DBServerProductNameKey { get; set; }
+        public string ConnectionString { get; set; }
     }
 }

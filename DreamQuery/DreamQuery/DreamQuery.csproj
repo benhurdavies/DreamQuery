@@ -39,8 +39,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attribute\Field.cs" />
+    <Compile Include="Attribute\PField.cs" />
+    <Compile Include="Attribute\RField.cs" />
+    <Compile Include="DB.cs" />
+    <Compile Include="Helper\DataHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SP\Execute\IRunSqlSp.cs" />
+    <Compile Include="SP\Execute\SqlServer\SqlServerRunSP.cs" />
     <Compile Include="SP\GenerateImpClass.cs" />
+    <Compile Include="SP\SPClassContext.cs" />
     <Compile Include="SP\SpFactory.cs" />
   </ItemGroup>
   <ItemGroup />

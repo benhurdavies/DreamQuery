@@ -14,17 +14,18 @@ namespace DreamQuery.SP
         private static Dictionary<string, object> Instance = new Dictionary<string, object>();
         private static string ClassNameSuffix = "SpImp";
 
-        private static SPClassContext CreatItsContext(string ServerKey)
+        private static SPClassContext CreatItsContext(string ServerKey,string ConnectionString)
         {
             SPClassContext obj = new SPClassContext();
             obj.ClassName = ClassNameSuffix + (Instance.Count + 1);
-            obj.DBServerProductNameKey=
+            obj.DBServerProductNameKey = ServerKey;
+            obj.ConnectionString = ConnectionString;
             return obj;
         }
 
         private static string GenCacheKey(SPClassContext context)
         {
-
+            return context.DBServerProductNameKey + "|" + context.ClassName;
         }
 
         public static T GetInstance<T>(string ServerKey)
@@ -33,15 +34,17 @@ namespace DreamQuery.SP
             if (Instance.ContainsKey(ServerKey)) result =(T) Instance[ServerKey];
             else if (ServerKey.Equals(DB.SQLSERVER, StringComparison.OrdinalIgnoreCase))
             {
-                result = GetInstance<T>(ServerKey);
+                SPClassContext Context = CreatItsContext(ServerKey);
+                result = GetInstance<T>(ServerKey,Context);
+                string CacheKey = GenCacheKey(Context);
                 Instance.Add(ServerKey, result);
             }
             return result;
         }
 
-        private static T GetInstance<T>(string ServerKey)
+        private static T GetInstance<T>(string ServerKey,SPClassContext Context)
         {
-            SPClassContext Context = CreatItsContext(ServerKey);
+            
             string ClassData = GenerateImpClass.GetClassData<T>(Context);
             var csc = new CSharpCodeProvider(new Dictionary<string, string> 
               { 

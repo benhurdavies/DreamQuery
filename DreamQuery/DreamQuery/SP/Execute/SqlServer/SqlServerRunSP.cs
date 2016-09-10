@@ -18,7 +18,7 @@ namespace DreamQuery.SP.Execute.SqlServer
         }
 
 
-        public System.Data.DataTable GetDataTable(string SpName, Dictionary<string, object> _params)
+        private System.Data.DataTable GetDataTable(string SpName, Dictionary<string, object> _params)
         {
             DataTable result = new DataTable();
             using (SqlConnection con = new SqlConnection(_ConnectionString))
@@ -41,7 +41,7 @@ namespace DreamQuery.SP.Execute.SqlServer
         }
 
 
-        public IEnumerable<T> GetGenericListData<T>(string SpName, Dictionary<string, object> _params)
+        private IEnumerable<T> GetGenericListData<T>(string SpName, Dictionary<string, object> _params)
         {
             IEnumerable<T> result = null;
             using (SqlConnection con = new SqlConnection(_ConnectionString))
@@ -63,19 +63,28 @@ namespace DreamQuery.SP.Execute.SqlServer
             return result;
         }
 
-        public IEnumerable<T> GetGenericListDataParam<T, K>(string SpName, K _param)
+        public ExecutionContext ExecuteSp(ExecutionContext Context)
         {
             throw new NotImplementedException();
+            return Context;
         }
 
-        public T GetGenericScalar<T>(string SpName, Dictionary<string, object> _params)
-        {
-            throw new NotImplementedException();
-        }
+        //public IEnumerable<T> GetGenericListDataParam<T, K>(string SpName, K _param)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public T GetGenericScalarParam<T, K>(string SpName, K _params)
-        {
-            throw new NotImplementedException();
-        }
+        //public T GetGenericScalar<T>(string SpName, Dictionary<string, object> _params)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public T GetGenericScalarParam<T, K>(string SpName, K _params)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+
+
     }
 }

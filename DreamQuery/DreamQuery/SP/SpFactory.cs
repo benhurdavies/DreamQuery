@@ -28,13 +28,13 @@ namespace DreamQuery.SP
             return context.DBServerProductNameKey + "|" + context.ClassName;
         }
 
-        public static T GetInstance<T>(string ServerKey)
+        public static T GetInstance<T>(string ServerKey,string ConnectionString)
         {
             T result = default(T);
             if (Instance.ContainsKey(ServerKey)) result =(T) Instance[ServerKey];
             else if (ServerKey.Equals(DB.SQLSERVER, StringComparison.OrdinalIgnoreCase))
             {
-                SPClassContext Context = CreatItsContext(ServerKey);
+                SPClassContext Context = CreatItsContext(ServerKey,ConnectionString);
                 result = GetInstance<T>(ServerKey,Context);
                 string CacheKey = GenCacheKey(Context);
                 Instance.Add(ServerKey, result);

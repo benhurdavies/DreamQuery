@@ -1,6 +1,9 @@
 ﻿using System;
+using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -53,6 +56,21 @@ namespace DreamQuery.Helper
                 result = true;
             }
             return result;
+        }
+
+        public static string GetActualName(this Type obj)
+        {
+           CodeDomProvider csharpProvider = CodeDomProvider.CreateProvider("C#");
+           CodeTypeReference typeReference = new CodeTypeReference(obj);
+           CodeVariableDeclarationStatement variableDeclaration = new CodeVariableDeclarationStatement(typeReference, "dummy");
+           StringBuilder sb = new StringBuilder();
+           using (StringWriter writer = new StringWriter(sb))
+           {
+               csharpProvider.GenerateCodeFromStatement(variableDeclaration, writer, new CodeGeneratorOptions());
+           }
+
+           sb.Replace(" dummy;", null);
+           return sb.ToString();
         }
     }
 }

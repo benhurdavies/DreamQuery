@@ -6,28 +6,24 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TestingDreamQuery.DTO;
+using TestingDreamQuery.DBInerface;
+using DreamQuery.SP;
+using DreamQuery;
+using System.CodeDom.Compiler;
+using System.CodeDom;
+using System.IO;
 
 namespace TestingDreamQuery
 {
     class Program
     {
-        static void Main(string[] args)
-        {
-            var param = typeof(Student).GetProperty("Name");
+       public static void Main(string[] args)
+       {
+         var connection = System.Configuration.ConfigurationManager.ConnectionStrings["DbConnection"].ConnectionString;
+         ITestingFeature Obj = SpFactory.GetInstance<ITestingFeature>(DB.SQLSERVER, connection);
+         var data = Obj.GetFeature(4500, 5000);
 
-            string RName = null;
-
-            RField Col_1 = null;//priority 1
-            Field Col_2 = null;//priority 2
-            var CustomAttribute = param.GetCustomAttributes(true);
-            foreach(var item in CustomAttribute)
-            {
-                if(item.GetType()==typeof(RField))
-                {
-                    Col_1 = item as RField;
-                }
-            }
-        
-        }
+         var data2 = Obj.GetFeatureAll();
+       }
     }
 }

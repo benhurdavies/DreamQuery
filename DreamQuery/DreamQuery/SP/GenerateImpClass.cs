@@ -18,7 +18,7 @@ namespace DreamQuery.SP
             + "using System.Text;" + Environment.NewLine
             + "using System.Threading.Tasks;" + Environment.NewLine
             + "using DreamQuery.SP;" + Environment.NewLine
-            + "using DreamQuery.SP.Execute" + Environment.NewLine;
+            + "using DreamQuery.SP.Execute;" + Environment.NewLine;
             return NameSpace;
         }
         public static string GetClassData<T>(SPClassContext Context)
@@ -31,11 +31,12 @@ namespace DreamQuery.SP
 
             sb.Append(_using);
             sb.Append(Environment.NewLine);
-            sb.Append(Classheader);
+            sb.Append(Classheader);sb.Append(Environment.NewLine);
             sb.Append("{"); // opening class
+            sb.Append(Environment.NewLine);
             foreach (var method in _impType.GetMethods())
             {
-                string ReturnType = method.ReturnType.FullName;
+                string ReturnType = method.ReturnType.GetActualName();
                 string methodName = method.Name;
                 var Mparam = method.GetParameters();
                 StringBuilder MSb = new StringBuilder();
@@ -44,7 +45,7 @@ namespace DreamQuery.SP
                 for (int pc = 0; pc < Mparam.Length; pc++)
                 {
                     if (pc > 0) MSb.Append(",");
-                    string paramtype = Mparam[pc].ParameterType.FullName;
+                    string paramtype = Mparam[pc].ParameterType.GetActualName();
                     string ParamName = Mparam[pc].Name;
                     MSb.Append(paramtype + "  " + ParamName);
                 }
@@ -68,27 +69,42 @@ namespace DreamQuery.SP
         {
             StringBuilder FunB = new StringBuilder();
             FunB.Append("ExecutionContext Result=null;"); FunB.Append(Environment.NewLine);
-            FunB.Append("Dictionary<string, object> SpParam = new Dictionary<string, object>();"); FunB.Append(Environment.NewLine);
-            foreach (var item in allparam)
-            {
-                FunB.Append("SpParam.Add(\"" + item.Name + "\"," + item.Name + ");"); FunB.Append(Environment.NewLine);
-            }
+            FunB.Append("Dictionary<string, SpParameter> SpParam = null;"); FunB.Append(Environment.NewLine);
             FunB.Append("ExecutionContext EContext=new ExecutionContext();"); FunB.Append(Environment.NewLine);
             FunB.Append("EContext.SpName=\"" + FuncName+"\";");
-            FunB.Append("EContext._params=SpParam;");
             if (allparam.Length == 1 && !BasicHelper.IsRemoveType(allparam[0].ParameterType))
             {
                 FunB.Append("EContext.ParamDTO=allparam[0].Name;"); FunB.Append(Environment.NewLine);
             }
-            FunB.Append("EContext.ReturnType=Type.GetType(\"" + returnType.FullName + "\");"); FunB.Append(Environment.NewLine);
+            else
+            {
+                FunB.Append("SpParam = new Dictionary<string, SpParameter>();");
+
+                foreach (var item in allparam)
+                {
+                    string ParamVar = SpParameterVariable(item);
+                    FunB.Append("SpParameter " + ParamVar + " = new SpParameter();");
+                    FunB.Append(ParamVar + ".PValue=" + item.Name + ";");
+                    FunB.Append(ParamVar + ".IsOutParam=bool.Parse(\"" + item.IsOut.ToString() + "\");");
+                    FunB.Append("SpParam.Add(\"" + item.Name + "\"," + ParamVar + ");"); FunB.Append(Environment.NewLine);
+                }
+                FunB.Append("EContext._params=SpParam;");
+            }
+            FunB.Append("EContext.ReturnType=typeof(" + returnType.GetActualName() + ");"); FunB.Append(Environment.NewLine);
+            FunB.Append("EContext.ServerKey=\"" + Context.DBServerProductNameKey + "\";"); FunB.Append(Environment.NewLine);
             //FunB.Append("RunSqlSp runSp=new RunSqlSp();");
             //FunB.Append("Result = runSp.GetDataTable(\"" + FuncName + "\",SpParam);");
 
             FunB.Append("IRunSqlSp EObj=RunSpFactory.Create(\"" + Context.DBServerProductNameKey + "\");"); FunB.Append(Environment.NewLine);
             FunB.Append("EObj.SetConnectionString(\"" + Context.ConnectionString + "\");"); FunB.Append(Environment.NewLine);
             FunB.Append("Result = EObj.ExecuteSp(EContext);"); FunB.Append(Environment.NewLine);
-            FunB.Append("return (" + returnType + ") Result.ReturnObject;"); FunB.Append(Environment.NewLine);
+            FunB.Append("return (" + returnType.GetActualName() + ") Result.ReturnObject;"); FunB.Append(Environment.NewLine);
             return FunB.ToString();
+        }
+
+        private static string SpParameterVariable(ParameterInfo param)
+        {
+            return "Param"+param.Name;
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace DreamQuery.SP
 {
     [Serializable]
-    class SPClassContext
+    public class SPClassContext
     {
         public string ClassName { get; set; }
         public string DBServerProductNameKey { get; set; }

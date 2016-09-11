@@ -54,6 +54,7 @@
     <Compile Include="SP\RegisterDTOMapper.cs" />
     <Compile Include="SP\SPClassContext.cs" />
     <Compile Include="SP\SpFactory.cs" />
+    <Compile Include="SP\SpParameter.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

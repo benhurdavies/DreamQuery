@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DreamQuery.SP.Execute
 {
-    interface IRunSqlSp
+    public interface IRunSqlSp
     {
         void SetConnectionString(string ConnectionString);
         //DataTable GetDataTable(string SpName, Dictionary<string, object> _params);

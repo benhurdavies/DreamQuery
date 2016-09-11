@@ -7,7 +7,7 @@ using DreamQuery.SP.Execute.SqlServer;
 
 namespace DreamQuery.SP.Execute
 {
-    class RunSpFactory
+    public class RunSpFactory
     {
         public static IRunSqlSp Create(string ServerKey)
         {

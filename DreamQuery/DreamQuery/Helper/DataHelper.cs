@@ -7,25 +7,29 @@ using System.Threading.Tasks;
 using System.Reflection;
 using DreamQuery.Attribute;
 using DreamQuery.SP;
+using System.Collections;
 
 namespace DreamQuery.Helper
 {
     static class DataHelper
     {
-        public static IEnumerable<T> ToDTOList<T>(this IDataReader Obj)
+        public static IEnumerable ToDTOList(this IDataReader Obj,Type T)
         {
-            List<T> Result = new List<T>();
+            Type TypeOfT = T.GetGenericArguments()[0];
+            var listType = typeof(List<>).MakeGenericType(TypeOfT);
+            var Result = (IList)Activator.CreateInstance(listType);
             while (Obj.Read())
             {
-                T CurObj = Obj.ToDTO<T>();
+                //Type TypeOfT = T.GetGenericArguments()[0];
+                object CurObj = Obj.ToDTO(TypeOfT);
                 Result.Add(CurObj);
             }
             return Result;
         }
 
-        public static T ToDTO<T>(this IDataReader Obj)
+        public static object ToDTO(this IDataReader Obj,Type T)
         {
-            T TObj = (T)Activator.CreateInstance(typeof(T));
+            object TObj = Activator.CreateInstance(T);
             HashSet<string> ColName = GetAllColumnName(Obj);
             foreach (var prop in TObj.GetType().GetProperties())
             {
@@ -39,10 +43,11 @@ namespace DreamQuery.Helper
                         {
                             prop.SetValue(TObj, Convert.ChangeType(CurValue, prop.PropertyType.GetGenericArguments()[0]));
                         }
-                        else
-                        {
-                            prop.SetValue(TObj, Convert.ChangeType(CurValue, prop.PropertyType), null);
-                        }
+                        
+                    }
+                    else
+                    {
+                        prop.SetValue(TObj, Convert.ChangeType(CurValue, prop.PropertyType), null);
                     }
                 }
             }

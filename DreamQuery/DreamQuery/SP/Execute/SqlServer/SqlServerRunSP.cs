@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DreamQuery.Helper;
+using System.Collections;
 
 namespace DreamQuery.SP.Execute.SqlServer
 {
@@ -18,7 +19,7 @@ namespace DreamQuery.SP.Execute.SqlServer
         }
 
 
-        private System.Data.DataTable GetDataTable(string SpName, Dictionary<string, object> _params)
+        private System.Data.DataTable GetDataTable(string SpName, Dictionary<string, SpParameter> _params)
         {
             DataTable result = new DataTable();
             using (SqlConnection con = new SqlConnection(_ConnectionString))
@@ -28,7 +29,7 @@ namespace DreamQuery.SP.Execute.SqlServer
                     cmd.CommandType = CommandType.StoredProcedure;
                     foreach (var item in _params)
                     {
-                        cmd.Parameters.AddWithValue("@" + item.Key, item.Value);
+                        cmd.Parameters.AddWithValue("@" + item.Key, item.Value.PValue);
                     }
                     using (var da = new SqlDataAdapter(cmd))
                     {
@@ -41,31 +42,33 @@ namespace DreamQuery.SP.Execute.SqlServer
         }
 
 
-        private IEnumerable<T> GetGenericListData<T>(string SpName, Dictionary<string, object> _params, ExecutionContext Context)
+        private object GetGenericListData(string SpName,ExecutionContext Context)
         {
-            IEnumerable<T> result = null;
+            object result = null;
             using (SqlConnection con = new SqlConnection(_ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(SpName, con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    foreach (var item in _params)
+                    foreach (var item in Context._params)
                     {
-                        cmd.Parameters.AddWithValue("@" + item.Key, item.Value);
+                        cmd.Parameters.AddWithValue("@" + item.Key, item.Value.PValue);
                     }
                     cmd.CommandType = CommandType.StoredProcedure;
+                    con.Open();
                     using(IDataReader reader=cmd.ExecuteReader())
                     {
                         var RegisteredDelegate = RegisterDTOMapper.GetDelegate(SpName);
                         if (RegisteredDelegate.IsValidDelegate(Context.ReturnType))
                         {
-                            result = (IEnumerable<T>)RegisteredDelegate.Invoke(reader);
+                            result = (object)RegisteredDelegate.Invoke(reader);
                         }
                         else
                         {
-                            result = reader.ToDTOList<T>();
+                            result = reader.ToDTOList(Context.ReturnType);
                         }
                     }
+                    con.Close();
                 }
             }
             return result;
@@ -73,7 +76,15 @@ namespace DreamQuery.SP.Execute.SqlServer
 
         public ExecutionContext ExecuteSp(ExecutionContext Context)
         {
-            throw new NotImplementedException();
+            Context.MakeParams();  //filling parameter dictinory
+            if(Context.ReturnType==typeof(DataTable))
+            {
+                Context.ReturnObject = GetDataTable(Context.SpName, Context._params);
+            }
+            else if (typeof(IEnumerable).IsAssignableFrom(Context.ReturnType))
+            {
+                Context.ReturnObject = GetGenericListData(Context.SpName, Context);
+            }
             return Context;
         }
 

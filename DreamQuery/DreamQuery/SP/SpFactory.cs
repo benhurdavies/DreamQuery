@@ -57,21 +57,27 @@ namespace DreamQuery.SP
                 GenerateInMemory = true,
                 GenerateExecutable = false
             };
-            parameters.ReferencedAssemblies.Add(@"System.Core.dll");
-            parameters.ReferencedAssemblies.Add(@"System.Xml.dll");
-            parameters.ReferencedAssemblies.Add(@"System.Data.dll");
-            parameters.ReferencedAssemblies.Add(@"System.dll");
+            //parameters.ReferencedAssemblies.Add(@"System.Core.dll");
+            //parameters.ReferencedAssemblies.Add(@"System.Xml.dll");
+            //parameters.ReferencedAssemblies.Add(@"System.Data.dll");
+            //parameters.ReferencedAssemblies.Add(@"System.dll");
+            //parameters.ReferencedAssemblies.Add(@"DreamQuery.dll");
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach(var item in assemblies)
+            {
+                parameters.ReferencedAssemblies.Add(item.Location);
+            }
             //parameters.ReferencedAssemblies.Add("overflowtest.exe");
             CompilerResults Cresults = csc.CompileAssemblyFromSource(parameters, ClassData);
-            //if (Cresults.Errors.HasErrors)
-            //{
-            //    StringBuilder sb = new StringBuilder();
-
-            //    foreach (CompilerError error in Cresults.Errors)
-            //    {
-            //        sb.AppendLine(String.Format("Error ({0}): {1}", error.ErrorNumber, error.ErrorText));
-            //    }
-            //}
+            if (Cresults.Errors.HasErrors)
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (CompilerError error in Cresults.Errors)
+                {
+                    sb.AppendLine(String.Format("Error ({0}): {1}", error.ErrorNumber, error.ErrorText));
+                }
+                Console.Write(sb.ToString());
+            }
             Assembly assembly = Cresults.CompiledAssembly;
             var type = assembly.GetType(Context.ClassName);
             var obj = Activator.CreateInstance(type);

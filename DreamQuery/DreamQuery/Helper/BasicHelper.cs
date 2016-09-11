@@ -40,5 +40,19 @@ namespace DreamQuery.Helper
                 Obj.Add(Key, Value);
             }
         }
+
+        public static bool IsValidDelegate(this Func<IDataReader, object> Obj,Type ValidType)
+        {
+            bool result = false;
+            if(Obj!=null)
+            {
+                if (Obj.Method.ReturnType != ValidType)
+                {
+                    throw new Exception("The Return Type RegistedDTO delegate(" + Obj.Method.ReturnType.FullName + ") and Method Return Type(" + ValidType.FullName + ") is Different :");
+                }
+                result = true;
+            }
+            return result;
+        }
     }
 }

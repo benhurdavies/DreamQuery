@@ -41,7 +41,7 @@ namespace DreamQuery.SP.Execute.SqlServer
         }
 
 
-        private IEnumerable<T> GetGenericListData<T>(string SpName, Dictionary<string, object> _params)
+        private IEnumerable<T> GetGenericListData<T>(string SpName, Dictionary<string, object> _params, ExecutionContext Context)
         {
             IEnumerable<T> result = null;
             using (SqlConnection con = new SqlConnection(_ConnectionString))
@@ -56,7 +56,15 @@ namespace DreamQuery.SP.Execute.SqlServer
                     cmd.CommandType = CommandType.StoredProcedure;
                     using(IDataReader reader=cmd.ExecuteReader())
                     {
-                        result = reader.ToDTOList<T>();
+                        var RegisteredDelegate = RegisterDTOMapper.GetDelegate(SpName);
+                        if (RegisteredDelegate.IsValidDelegate(Context.ReturnType))
+                        {
+                            result = (IEnumerable<T>)RegisteredDelegate.Invoke(reader);
+                        }
+                        else
+                        {
+                            result = reader.ToDTOList<T>();
+                        }
                     }
                 }
             }

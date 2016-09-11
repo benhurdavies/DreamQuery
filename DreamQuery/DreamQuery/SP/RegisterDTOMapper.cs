@@ -10,9 +10,9 @@ namespace DreamQuery.SP
 {
     public class RegisterDTOMapper
     {
-        static Dictionary<string, Func<object, IDataReader>> _SpDTODelegate = new Dictionary<string, Func<object, IDataReader>>();
+        static Dictionary<string, Func<IDataReader, object>> _SpDTODelegate = new Dictionary<string, Func<IDataReader, object>>();
 
-        public static void Add(string key, Func<object, IDataReader> Value)
+        public static void Add(string key, Func<IDataReader, object> Value)
         {
             _SpDTODelegate.AddOrUpdate(key,Value);
         }
@@ -26,9 +26,9 @@ namespace DreamQuery.SP
         {
             _SpDTODelegate.Clear();
         }
-        public static Func<object, IDataReader> GetDelegate(string Key)
+        public static Func<IDataReader, object> GetDelegate(string Key)
         {
-            Func<object, IDataReader> result=null;
+            Func<IDataReader, object> result = null;
             if(_SpDTODelegate.ContainsKey(Key))
                 result=_SpDTODelegate[Key];
             return result;

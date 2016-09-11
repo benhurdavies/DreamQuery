@@ -51,6 +51,7 @@
     <Compile Include="SP\Execute\RunSpFactory.cs" />
     <Compile Include="SP\Execute\SqlServer\SqlServerRunSP.cs" />
     <Compile Include="SP\GenerateImpClass.cs" />
+    <Compile Include="SP\RegisterDTOMapper.cs" />
     <Compile Include="SP\SPClassContext.cs" />
     <Compile Include="SP\SpFactory.cs" />
   </ItemGroup>

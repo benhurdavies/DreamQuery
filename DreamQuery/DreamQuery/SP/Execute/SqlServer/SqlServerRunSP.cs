@@ -56,7 +56,7 @@ namespace DreamQuery.SP.Execute.SqlServer
                     cmd.CommandType = CommandType.StoredProcedure;
                     using(IDataReader reader=cmd.ExecuteReader())
                     {
-                        result = reader.ToDTO<T>();
+                        result = reader.ToDTOList<T>();
                     }
                 }
             }

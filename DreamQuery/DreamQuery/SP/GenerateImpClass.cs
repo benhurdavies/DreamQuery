@@ -76,7 +76,7 @@ namespace DreamQuery.SP
             FunB.Append("ExecutionContext EContext=new ExecutionContext();"); FunB.Append(Environment.NewLine);
             FunB.Append("EContext.SpName=\"" + FuncName+"\";");
             FunB.Append("EContext._params=SpParam;");
-            if (allparam.Length == 1 && !BasicHelper.IsBaseType(allparam[0].ParameterType))
+            if (allparam.Length == 1 && !BasicHelper.IsRemoveType(allparam[0].ParameterType))
             {
                 FunB.Append("EContext.ParamDTO=allparam[0].Name;"); FunB.Append(Environment.NewLine);
             }

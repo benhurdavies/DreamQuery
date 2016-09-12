@@ -9,5 +9,6 @@ namespace DreamQuery
     public static class DB
     {
         public static string SQLSERVER = "SQLSERVER";
+        public static string MYSQL = "MYSQL";
     }
 }

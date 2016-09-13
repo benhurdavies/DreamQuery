@@ -50,24 +50,16 @@ namespace DreamQuery.SP
               { 
                  { "CompilerVersion", "v4.0" } 
               });
-            //new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } }
-            // var parameters = new CompilerParameters(new[] { "mscorlib.dll", "System.Core.dll" }, true);
             var parameters = new System.CodeDom.Compiler.CompilerParameters()
             {
                 GenerateInMemory = true,
                 GenerateExecutable = false
             };
-            //parameters.ReferencedAssemblies.Add(@"System.Core.dll");
-            //parameters.ReferencedAssemblies.Add(@"System.Xml.dll");
-            //parameters.ReferencedAssemblies.Add(@"System.Data.dll");
-            //parameters.ReferencedAssemblies.Add(@"System.dll");
-            //parameters.ReferencedAssemblies.Add(@"DreamQuery.dll");
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach(var item in assemblies)
             {
                 parameters.ReferencedAssemblies.Add(item.Location);
             }
-            //parameters.ReferencedAssemblies.Add("overflowtest.exe");
             CompilerResults Cresults = csc.CompileAssemblyFromSource(parameters, ClassData);
             if (Cresults.Errors.HasErrors)
             {

@@ -18,33 +18,10 @@ namespace DreamQuery.SP.Execute.SqlServer
             _ConnectionString = ConnectionString;
         }
 
-
-        private System.Data.DataTable GetDataTable(string SpName, Dictionary<string, SpParameter> _params)
-        {
-            DataTable result = new DataTable();
-            using (SqlConnection con = new SqlConnection(_ConnectionString))
-            {
-                using (SqlCommand cmd = new SqlCommand(SpName, con))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    foreach (var item in _params)
-                    {
-                        cmd.Parameters.AddWithValue("@" + item.Key, item.Value.PValue);
-                    }
-                    using (var da = new SqlDataAdapter(cmd))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        da.Fill(result);
-                    }
-                }
-            }
-            return result;
-        }
-
-
-        private object GetGenericListData(string SpName,ExecutionContext Context)
+        private object ExecuteProcedure(string SpName,ExecutionContext Context)
         {
             object result = null;
+            List<SpOutParam> ListOutParam = new List<SpOutParam>();
             using (SqlConnection con = new SqlConnection(_ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(SpName, con))
@@ -52,23 +29,55 @@ namespace DreamQuery.SP.Execute.SqlServer
                     cmd.CommandType = CommandType.StoredProcedure;
                     foreach (var item in Context._params)
                     {
-                        cmd.Parameters.AddWithValue("@" + item.Key, item.Value.PValue);
+                        var SqlParam = cmd.Parameters.AddWithValue("@" + item.Key, item.Value.PValue);
+                        if (item.Value.IsOutParam)
+                        {
+                            SqlParam.Direction = ParameterDirection.Output;
+                            ListOutParam.Add(new SpOutParam
+                            {
+                                ParamObj = SqlParam,
+                                ParamName = item.Key
+                            });
+                        }
                     }
                     cmd.CommandType = CommandType.StoredProcedure;
-                    con.Open();
-                    using(IDataReader reader=cmd.ExecuteReader())
+                    
+                    if (Context.ReturnType == typeof(DataTable))
                     {
-                        var RegisteredDelegate = RegisterDTOMapper.GetDelegate(SpName);
-                        if (RegisteredDelegate.IsValidDelegate(Context.ReturnType))
+                        #region ReturnDataTable
+
+                        DataTable DataTableResult = new DataTable();
+                        using (var da = new SqlDataAdapter(cmd))
                         {
-                            result = (object)RegisteredDelegate.Invoke(reader);
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            da.Fill(DataTableResult);
                         }
-                        else
-                        {
-                            result = reader.ToDTOList(Context.ReturnType);
-                        }
+                        result = DataTableResult;
+
+                        #endregion
                     }
-                    con.Close();
+                    else if (typeof(IEnumerable).IsAssignableFrom(Context.ReturnType))
+                    {
+                        #region ReturnListDTO
+
+                        con.Open();
+                        using (IDataReader reader = cmd.ExecuteReader(CommandBehavior.CloseConnection))
+                        {
+                            var RegisteredDelegate = RegisterDTOMapper.GetDelegate(SpName);
+                            if (RegisteredDelegate.IsValidDelegate(Context.ReturnType))
+                            {
+                                result = (object)RegisteredDelegate.Invoke(reader);
+                            }
+                            else
+                            {
+                                result = reader.ToDTOList(Context.ReturnType);
+                            }
+                        }
+                        con.Close();
+
+                        #endregion
+                    }
+                    SpOutParam.FixOutputParam(ListOutParam, Context._params);
                 }
             }
             return result;
@@ -77,32 +86,9 @@ namespace DreamQuery.SP.Execute.SqlServer
         public ExecutionContext ExecuteSp(ExecutionContext Context)
         {
             Context.MakeParams();  //filling parameter dictinory
-            if(Context.ReturnType==typeof(DataTable))
-            {
-                Context.ReturnObject = GetDataTable(Context.SpName, Context._params);
-            }
-            else if (typeof(IEnumerable).IsAssignableFrom(Context.ReturnType))
-            {
-                Context.ReturnObject = GetGenericListData(Context.SpName, Context);
-            }
+            Context.ReturnObject = ExecuteProcedure(Context.SpName, Context);
             return Context;
         }
-
-        //public IEnumerable<T> GetGenericListDataParam<T, K>(string SpName, K _param)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public T GetGenericScalar<T>(string SpName, Dictionary<string, object> _params)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public T GetGenericScalarParam<T, K>(string SpName, K _params)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
 
 
     }

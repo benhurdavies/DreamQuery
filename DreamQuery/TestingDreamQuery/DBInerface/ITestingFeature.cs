@@ -11,7 +11,7 @@ namespace TestingDreamQuery.DBInerface
     public interface ITestingFeature
     {
         //DataTable GetFeature(int min, int max);
-        IEnumerable<Feature> GetFeature(int min, int max);
+        DataTable GetFeature(int min, int max,out int result);
 
         IEnumerable<Feature> GetFeatureAll();
     }

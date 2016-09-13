@@ -42,6 +42,7 @@
     <Compile Include="Attribute\Field.cs" />
     <Compile Include="Attribute\PField.cs" />
     <Compile Include="Attribute\RField.cs" />
+    <Compile Include="Attribute\SPName.cs" />
     <Compile Include="DB.cs" />
     <Compile Include="Helper\BasicHelper.cs" />
     <Compile Include="Helper\DataHelper.cs" />
@@ -49,6 +50,7 @@
     <Compile Include="SP\Execute\ExecutionContext.cs" />
     <Compile Include="SP\Execute\IRunSqlSp.cs" />
     <Compile Include="SP\Execute\RunSpFactory.cs" />
+    <Compile Include="SP\Execute\SpOutParam.cs" />
     <Compile Include="SP\Execute\SqlServer\SqlServerRunSP.cs" />
     <Compile Include="SP\GenerateImpClass.cs" />
     <Compile Include="SP\RegisterDTOMapper.cs" />

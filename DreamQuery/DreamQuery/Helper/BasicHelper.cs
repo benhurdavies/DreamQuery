@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace DreamQuery.Helper
 {
@@ -68,9 +69,14 @@ namespace DreamQuery.Helper
            {
                csharpProvider.GenerateCodeFromStatement(variableDeclaration, writer, new CodeGeneratorOptions());
            }
-
            sb.Replace(" dummy;", null);
+           sb.Replace("&", null);
            return sb.ToString();
+        }
+
+        public static string GetOutString(this ParameterInfo Obj)
+        {
+            return Obj.IsOut ? "out" : "";
         }
     }
 }

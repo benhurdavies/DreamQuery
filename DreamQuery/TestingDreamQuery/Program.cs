@@ -21,7 +21,9 @@ namespace TestingDreamQuery
        {
          var connection = System.Configuration.ConfigurationManager.ConnectionStrings["DbConnection"].ConnectionString;
          ITestingFeature Obj = SpFactory.GetInstance<ITestingFeature>(DB.SQLSERVER, connection);
-         var data = Obj.GetFeature(4500, 5000);
+
+         int result = 0;
+         var data = Obj.GetFeature(4500, 5000, out result);
 
          var data2 = Obj.GetFeatureAll();
        }

@@ -47,7 +47,8 @@ namespace DreamQuery.SP
                     if (pc > 0) MSb.Append(",");
                     string paramtype = Mparam[pc].ParameterType.GetActualName();
                     string ParamName = Mparam[pc].Name;
-                    MSb.Append(paramtype + "  " + ParamName);
+                    string ParamOut = Mparam[pc].GetOutString();
+                    MSb.Append(ParamOut + " " + paramtype + "  " + ParamName);
                 }
                 MSb.Append(" )");
                 MSb.Append(Environment.NewLine);
@@ -67,7 +68,8 @@ namespace DreamQuery.SP
 
         private static string CreatingFunBody(ParameterInfo[] allparam, Type returnType, string FuncName, SPClassContext Context)
         {
-            StringBuilder FunB = new StringBuilder();
+            StringBuilder FunB = new StringBuilder(256);
+            StringBuilder OutParamH = new StringBuilder();
             FunB.Append("ExecutionContext Result=null;"); FunB.Append(Environment.NewLine);
             FunB.Append("Dictionary<string, SpParameter> SpParam = null;"); FunB.Append(Environment.NewLine);
             FunB.Append("ExecutionContext EContext=new ExecutionContext();"); FunB.Append(Environment.NewLine);
@@ -82,6 +84,13 @@ namespace DreamQuery.SP
 
                 foreach (var item in allparam)
                 {
+                    //Handling out...
+                    if(item.IsOut)
+                    {
+                        string OutPramatype = item.ParameterType.GetActualName();
+                        FunB.Append(item.Name + " = default(" + OutPramatype + ");"); FunB.Append(Environment.NewLine);
+                        OutParamH.Append(item.Name + "= (" + OutPramatype + ") EContext._params[\"" + item.Name + "\"].PValue;"); FunB.Append(Environment.NewLine);
+                    }
                     string ParamVar = SpParameterVariable(item);
                     FunB.Append("SpParameter " + ParamVar + " = new SpParameter();");
                     FunB.Append(ParamVar + ".PValue=" + item.Name + ";");
@@ -98,6 +107,7 @@ namespace DreamQuery.SP
             FunB.Append("IRunSqlSp EObj=RunSpFactory.Create(\"" + Context.DBServerProductNameKey + "\");"); FunB.Append(Environment.NewLine);
             FunB.Append("EObj.SetConnectionString(\"" + Context.ConnectionString + "\");"); FunB.Append(Environment.NewLine);
             FunB.Append("Result = EObj.ExecuteSp(EContext);"); FunB.Append(Environment.NewLine);
+            FunB.Append(OutParamH);
             FunB.Append("return (" + returnType.GetActualName() + ") Result.ReturnObject;"); FunB.Append(Environment.NewLine);
             return FunB.ToString();
         }

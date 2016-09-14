@@ -24,15 +24,21 @@ namespace DreamQuery.SP
         private static SPClassContext CreatItsContext(string ServerKey,string ConnectionString)
         {
             SPClassContext obj = new SPClassContext();
-            obj.ClassName = ClassNameSuffix + (Instance.Count + 1);
+            obj.ClassName = CreateClassName();
             obj.DBServerProductNameKey = ServerKey;
             obj.ConnectionString = ConnectionString;
             return obj;
         }
 
+        private static string CreateClassName()
+        {
+            string SGuid = Guid.NewGuid().ToString().Replace("-", "_");
+            return ClassNameSuffix + SGuid;
+        }
+
         private static string GenCacheKey(SPClassContext context)
         {
-            return context.DBServerProductNameKey + "|" + context.ClassName;
+            return context.ClassName;
         }
 
         public static T GetInstance<T>(string ServerKey,string ConnectionString)

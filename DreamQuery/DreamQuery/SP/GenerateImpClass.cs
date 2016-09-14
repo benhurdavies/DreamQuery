@@ -77,7 +77,7 @@ namespace DreamQuery.SP
             FunB.Append("EContext.SpName=\"" + ProcedurName + "\";");
             if (allparam.Length == 1 && !BasicHelper.IsRemoveType(allparam[0].ParameterType))
             {
-                FunB.Append("EContext.ParamDTO=allparam[0].Name;"); FunB.Append(Environment.NewLine);
+                FunB.Append("EContext.ParamDTO="+allparam[0].Name+";"); FunB.Append(Environment.NewLine);
             }
             else
             {
@@ -93,8 +93,9 @@ namespace DreamQuery.SP
                         OutParamH.Append(item.Name + "= (" + OutPramatype + ") EContext._params[\"" + item.Name + "\"].PValue;"); FunB.Append(Environment.NewLine);
                     }
                     string ParamVar = SpParameterVariable(item);
-                    FunB.Append("SpParameter " + ParamVar + " = new SpParameter();");
-                    FunB.Append(ParamVar + ".PValue=" + item.Name + ";");
+                    FunB.Append("SpParameter " + ParamVar + " = new SpParameter();"); FunB.Append(Environment.NewLine);
+                    FunB.Append(ParamVar + ".PValue=" + item.Name + ";"); FunB.Append(Environment.NewLine);
+                    FunB.Append(ParamVar + ".PropertyName=\"" + item.Name + "\";"); FunB.Append(Environment.NewLine);
                     FunB.Append(ParamVar + ".IsOutParam=bool.Parse(\"" + item.IsOut.ToString() + "\");");
                     FunB.Append("SpParam.Add(\"" + item.Name + "\"," + ParamVar + ");"); FunB.Append(Environment.NewLine);
                 }

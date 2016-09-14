@@ -49,9 +49,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SP\Execute\ExecutionContext.cs" />
     <Compile Include="SP\Execute\IRunSqlSp.cs" />
+    <Compile Include="SP\Execute\ISProcedure.cs" />
+    <Compile Include="SP\Execute\ParameterMetadata.cs" />
     <Compile Include="SP\Execute\RunSpFactory.cs" />
     <Compile Include="SP\Execute\SpOutParam.cs" />
+    <Compile Include="SP\Execute\SProcedureFactory.cs" />
     <Compile Include="SP\Execute\SqlServer\SqlServerRunSP.cs" />
+    <Compile Include="SP\Execute\SqlServer\SqlServerSProcedure.cs" />
     <Compile Include="SP\GenerateImpClass.cs" />
     <Compile Include="SP\RegisterDTOMapper.cs" />
     <Compile Include="SP\SPClassContext.cs" />

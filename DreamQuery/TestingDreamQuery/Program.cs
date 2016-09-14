@@ -19,12 +19,16 @@ namespace TestingDreamQuery
     {
        public static void Main(string[] args)
        {
-           var version = Environment.Version.Major;
          var connection = System.Configuration.ConfigurationManager.ConnectionStrings["DbConnection"].ConnectionString;
          ITestingFeature Obj = SpFactory.GetInstance<ITestingFeature>(DB.SQLSERVER, connection);
 
-         int result = 0;
-         var data = Obj.GetFeatureBetween(4500, 5000, out result);
+         FeatureInput obj = new FeatureInput
+         {
+             Max = 5000,
+             Min = 4500,
+             result = 0
+         };
+         var data = Obj.GetFeatureBetween(obj);
 
          var data2 = Obj.GetFeatureAll();
        }

@@ -15,6 +15,9 @@ namespace TestingDreamQuery.DBInerface
         [SPName("GetFeature")]
         DataTable GetFeatureBetween(int min, int max,out int result);
 
+        [SPName("GetFeature")]
+        IEnumerable<Feature> GetFeatureBetween(FeatureInput Feature);
+
         IEnumerable<Feature> GetFeatureAll();
     }
 }

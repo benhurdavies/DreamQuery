@@ -45,6 +45,7 @@
     <Compile Include="BuildClassTest.cs" />
     <Compile Include="DBInerface\ITestingFeature.cs" />
     <Compile Include="DTO\Feature.cs" />
+    <Compile Include="DTO\FeatureInput.cs" />
     <Compile Include="DTO\Student.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

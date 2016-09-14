@@ -36,7 +36,8 @@ namespace DreamQuery.SP.Execute.SqlServer
                             ListOutParam.Add(new SpOutParam
                             {
                                 ParamObj = SqlParam,
-                                ParamName = item.Key
+                                ParamName = item.Key,
+                                Parameter = item.Value
                             });
                         }
                     }
@@ -78,6 +79,8 @@ namespace DreamQuery.SP.Execute.SqlServer
                         #endregion
                     }
                     SpOutParam.FixOutputParam(ListOutParam, Context._params);
+                    //changeing Out Parameter value in parameter Object.
+                    DataHelper.ChangeOutParamInDTO(ListOutParam, Context.ParamDTO);
                 }
             }
             return result;
@@ -85,6 +88,7 @@ namespace DreamQuery.SP.Execute.SqlServer
 
         public ExecutionContext ExecuteSp(ExecutionContext Context)
         {
+            Context.ConnectionString = _ConnectionString;
             Context.MakeParams();  //filling parameter dictinory
             Context.ReturnObject = ExecuteProcedure(Context.SpName, Context);
             return Context;

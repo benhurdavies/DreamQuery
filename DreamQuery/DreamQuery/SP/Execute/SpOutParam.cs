@@ -11,6 +11,7 @@ namespace DreamQuery.SP.Execute
     class SpOutParam
     {
         public string ParamName { get; set; }
+        public SpParameter Parameter { get; set; }
         public SqlParameter ParamObj { get; set; }
         public static void FixOutputParam(IEnumerable<SpOutParam> ParamList,Dictionary<string,SpParameter> EffectedObject)
         {

@@ -38,6 +38,7 @@ namespace DreamQuery.SP
             {
                 string ReturnType = method.ReturnType.GetActualName();
                 string methodName = method.Name;
+                string ProcedureName = method.GetProcedureName();
                 var Mparam = method.GetParameters();
                 StringBuilder MSb = new StringBuilder();
                 MSb.Append("public " + ReturnType + " " + methodName);
@@ -54,7 +55,7 @@ namespace DreamQuery.SP
                 MSb.Append(Environment.NewLine);
                 MSb.Append("{");
                 MSb.Append(Environment.NewLine);
-                string FuncBody = CreatingFunBody(Mparam, method.ReturnType, methodName, Context);
+                string FuncBody = CreatingFunBody(Mparam, method.ReturnType, methodName,ProcedureName, Context);
                 MSb.Append(FuncBody);
                 MSb.Append(Environment.NewLine);
                 MSb.Append("}");
@@ -66,14 +67,14 @@ namespace DreamQuery.SP
             return sb.ToString();
         }
 
-        private static string CreatingFunBody(ParameterInfo[] allparam, Type returnType, string FuncName, SPClassContext Context)
+        private static string CreatingFunBody(ParameterInfo[] allparam, Type returnType, string FuncName,string ProcedurName, SPClassContext Context)
         {
             StringBuilder FunB = new StringBuilder(256);
             StringBuilder OutParamH = new StringBuilder();
             FunB.Append("ExecutionContext Result=null;"); FunB.Append(Environment.NewLine);
             FunB.Append("Dictionary<string, SpParameter> SpParam = null;"); FunB.Append(Environment.NewLine);
             FunB.Append("ExecutionContext EContext=new ExecutionContext();"); FunB.Append(Environment.NewLine);
-            FunB.Append("EContext.SpName=\"" + FuncName+"\";");
+            FunB.Append("EContext.SpName=\"" + ProcedurName + "\";");
             if (allparam.Length == 1 && !BasicHelper.IsRemoveType(allparam[0].ParameterType))
             {
                 FunB.Append("EContext.ParamDTO=allparam[0].Name;"); FunB.Append(Environment.NewLine);
@@ -101,9 +102,6 @@ namespace DreamQuery.SP
             }
             FunB.Append("EContext.ReturnType=typeof(" + returnType.GetActualName() + ");"); FunB.Append(Environment.NewLine);
             FunB.Append("EContext.ServerKey=\"" + Context.DBServerProductNameKey + "\";"); FunB.Append(Environment.NewLine);
-            //FunB.Append("RunSqlSp runSp=new RunSqlSp();");
-            //FunB.Append("Result = runSp.GetDataTable(\"" + FuncName + "\",SpParam);");
-
             FunB.Append("IRunSqlSp EObj=RunSpFactory.Create(\"" + Context.DBServerProductNameKey + "\");"); FunB.Append(Environment.NewLine);
             FunB.Append("EObj.SetConnectionString(\"" + Context.ConnectionString + "\");"); FunB.Append(Environment.NewLine);
             FunB.Append("Result = EObj.ExecuteSp(EContext);"); FunB.Append(Environment.NewLine);

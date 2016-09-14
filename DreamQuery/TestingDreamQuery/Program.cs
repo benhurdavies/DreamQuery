@@ -23,7 +23,7 @@ namespace TestingDreamQuery
          ITestingFeature Obj = SpFactory.GetInstance<ITestingFeature>(DB.SQLSERVER, connection);
 
          int result = 0;
-         var data = Obj.GetFeature(4500, 5000, out result);
+         var data = Obj.GetFeatureBetween(4500, 5000, out result);
 
          var data2 = Obj.GetFeatureAll();
        }

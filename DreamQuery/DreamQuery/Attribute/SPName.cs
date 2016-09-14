@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DreamQuery.Attribute
 {
-    [System.AttributeUsage(System.AttributeTargets.Property)]
+    [System.AttributeUsage(System.AttributeTargets.Method)]
     public class SPName : System.Attribute
     {
         public string Name { get; set; }

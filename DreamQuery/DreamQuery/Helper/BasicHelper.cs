@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using DreamQuery.Attribute;
 
 namespace DreamQuery.Helper
 {
@@ -77,6 +78,23 @@ namespace DreamQuery.Helper
         public static string GetOutString(this ParameterInfo Obj)
         {
             return Obj.IsOut ? "out" : "";
+        }
+
+        public static string GetProcedureName(this MethodInfo Obj)
+        {
+            string ProcedureName = null;
+            var Attr = Obj.GetCustomAttributes(true);
+            foreach(var item in Attr)
+            {
+                if(item.GetType()==typeof(SPName))
+                {
+                    SPName _SPNameAttr = item as SPName;
+                    ProcedureName = _SPNameAttr.Name;
+                    break;
+                }
+            }
+            ProcedureName = ProcedureName ?? Obj.Name;
+            return ProcedureName;
         }
     }
 }

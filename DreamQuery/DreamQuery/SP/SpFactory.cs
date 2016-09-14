@@ -11,6 +11,13 @@ namespace DreamQuery.SP
 {
     public class SpFactory
     {
+        /// <summary>
+        /// CompilerVersion-> v4.0
+        /// Value should be similar format of "v4.0"
+        /// </summary>
+        public static string CompilerVersion { get { return _CompilerVersion; } set { _CompilerVersion = value; } }
+        private static string _CompilerVersion = "v4.0";
+
         private static Dictionary<string, object> Instance = new Dictionary<string, object>();
         private static string ClassNameSuffix = "SpImp";
 
@@ -48,7 +55,7 @@ namespace DreamQuery.SP
             string ClassData = GenerateImpClass.GetClassData<T>(Context);
             var csc = new CSharpCodeProvider(new Dictionary<string, string> 
               { 
-                 { "CompilerVersion", "v4.0" } 
+                 { "CompilerVersion", CompilerVersion } 
               });
             var parameters = new System.CodeDom.Compiler.CompilerParameters()
             {

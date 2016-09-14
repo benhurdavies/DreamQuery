@@ -19,6 +19,7 @@ namespace TestingDreamQuery
     {
        public static void Main(string[] args)
        {
+           var version = Environment.Version.Major;
          var connection = System.Configuration.ConfigurationManager.ConnectionStrings["DbConnection"].ConnectionString;
          ITestingFeature Obj = SpFactory.GetInstance<ITestingFeature>(DB.SQLSERVER, connection);
 
